@@ -4,7 +4,7 @@ defmodule GreenprintWeb.App.Dashboard do
   @impl true
   def render(assigns) do
     ~H"""
-      <.svelte name="app/pages/Dashboard" socket={@socket} />
+      <.svelte name="app/pages/Dashboard" props={%{current_user: @current_user}} socket={@socket} />
     """
   end
 

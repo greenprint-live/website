@@ -3,6 +3,7 @@
     import AuthForm from "../../components/auth/AuthForm.svelte";
     import FormInput from "../../components/auth/FormInput.svelte";
     import type { LiveSocket } from "phoenix_live_view";
+    import Navbar from "$lib/app/components/Navbar.svelte";
 
     interface Props {
         socket: any;
@@ -60,6 +61,7 @@
     ];
 </script>
 
+<Navbar {current_user} />
 <AuthLayout {current_user}>
     <AuthForm
         title="Sign in to your account"

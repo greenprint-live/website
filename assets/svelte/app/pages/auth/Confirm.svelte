@@ -16,7 +16,6 @@
 
     let isSubmitting = $state(false);
 
-
     const links = [
         { text: "Sign in", href: "/auth/login" },
         { text: "Create account", href: "/auth/register" }

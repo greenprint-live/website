@@ -4,6 +4,7 @@
     import { Button } from "$lib/components/ui/button";
     import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "$lib/components/ui/card";
     import { Alert } from "$lib/components/ui/alert";
+    import Navbar from "$lib/app/components/Navbar.svelte";
 
     interface Props {
         errors?: Record<string, string[]>;
@@ -52,6 +53,7 @@
     });
 </script>
 
+<Navbar {current_user} />
 <AuthLayout {current_user}>
     <Card class="w-full backdrop-blur-sm bg-card/80 border-border/40 shadow-xl">
         <CardHeader class="text-center space-y-1">
