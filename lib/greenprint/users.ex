@@ -1,10 +1,11 @@
 defmodule Greenprint.Users do
   @moduledoc """
-  The Users context.
+  The Users context with comprehensive type specifications.
   """
 
   import Ecto.Query, warn: false
   alias Greenprint.Repo
+  alias Greenprint.Types
 
   alias Greenprint.Users.{User, UserToken, UserNotifier}
 
@@ -22,6 +23,7 @@ defmodule Greenprint.Users do
       nil
 
   """
+  @spec get_user_by_email(Types.email()) :: User.t() | nil
   def get_user_by_email(email) when is_binary(email) do
     Repo.get_by(User, email: email)
   end
@@ -38,6 +40,7 @@ defmodule Greenprint.Users do
       nil
 
   """
+  @spec get_user_by_email_and_password(Types.email(), Types.password()) :: User.t() | nil
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
     user = Repo.get_by(User, email: email)
@@ -58,6 +61,7 @@ defmodule Greenprint.Users do
       ** (Ecto.NoResultsError)
 
   """
+  @spec get_user!(Types.user_id()) :: User.t()
   def get_user!(id), do: Repo.get!(User, id)
 
   ## User registration
@@ -74,6 +78,7 @@ defmodule Greenprint.Users do
       {:error, %Ecto.Changeset{}}
 
   """
+  @spec register_user(Types.attrs()) :: Types.repo_result(User.t())
   def register_user(attrs) do
     %User{}
     |> User.registration_changeset(attrs)
@@ -89,6 +94,7 @@ defmodule Greenprint.Users do
       %Ecto.Changeset{data: %User{}}
 
   """
+  @spec change_user_registration(User.t(), Types.attrs()) :: Types.changeset(User.t())
   def change_user_registration(%User{} = user, attrs \\ %{}) do
     User.registration_changeset(user, attrs, hash_password: false, validate_email: false)
   end
@@ -104,6 +110,7 @@ defmodule Greenprint.Users do
       %Ecto.Changeset{data: %User{}}
 
   """
+  @spec change_user_email(User.t(), Types.attrs()) :: Types.changeset(User.t())
   def change_user_email(user, attrs \\ %{}) do
     User.email_changeset(user, attrs, validate_email: false)
   end
@@ -121,6 +128,7 @@ defmodule Greenprint.Users do
       {:error, %Ecto.Changeset{}}
 
   """
+  @spec apply_user_email(User.t(), Types.password(), Types.attrs()) :: {:ok, User.t()} | {:error, Types.changeset(User.t())}
   def apply_user_email(user, password, attrs) do
     user
     |> User.email_changeset(attrs)
@@ -134,6 +142,7 @@ defmodule Greenprint.Users do
   If the token matches, the user email is updated and the token is deleted.
   The confirmed_at date is also updated to the current time.
   """
+  @spec update_user_email(User.t(), Types.email_token()) :: :ok | :error
   def update_user_email(user, token) do
     context = "change:#{user.email}"
 
@@ -146,6 +155,7 @@ defmodule Greenprint.Users do
     end
   end
 
+  @spec user_email_multi(User.t(), Types.email(), String.t()) :: Types.multi()
   defp user_email_multi(user, email, context) do
     changeset =
       user
@@ -166,6 +176,7 @@ defmodule Greenprint.Users do
       {:ok, %{to: ..., body: ...}}
 
   """
+  @spec deliver_user_update_email_instructions(User.t(), Types.email(), Types.url_fun()) :: Types.email_delivery_result()
   def deliver_user_update_email_instructions(%User{} = user, current_email, update_email_url_fun)
       when is_function(update_email_url_fun, 1) do
     {encoded_token, user_token} = UserToken.build_email_token(user, "change:#{current_email}")
@@ -183,6 +194,7 @@ defmodule Greenprint.Users do
       %Ecto.Changeset{data: %User{}}
 
   """
+  @spec change_user_password(User.t(), Types.attrs()) :: Types.changeset(User.t())
   def change_user_password(user, attrs \\ %{}) do
     User.password_changeset(user, attrs, hash_password: false)
   end
@@ -199,6 +211,7 @@ defmodule Greenprint.Users do
       {:error, %Ecto.Changeset{}}
 
   """
+  @spec update_user_password(User.t(), Types.password(), Types.attrs()) :: Types.repo_result(User.t())
   def update_user_password(user, password, attrs) do
     changeset =
       user
@@ -220,6 +233,7 @@ defmodule Greenprint.Users do
   @doc """
   Generates a session token.
   """
+  @spec generate_user_session_token(User.t()) :: Types.session_token()
   def generate_user_session_token(user) do
     {token, user_token} = UserToken.build_session_token(user)
     Repo.insert!(user_token)
@@ -229,6 +243,7 @@ defmodule Greenprint.Users do
   @doc """
   Gets the user with the given signed token.
   """
+  @spec get_user_by_session_token(Types.session_token()) :: User.t() | nil
   def get_user_by_session_token(token) do
     {:ok, query} = UserToken.verify_session_token_query(token)
     Repo.one(query)
@@ -237,6 +252,7 @@ defmodule Greenprint.Users do
   @doc """
   Deletes the signed token with the given context.
   """
+  @spec delete_user_session_token(Types.session_token()) :: :ok
   def delete_user_session_token(token) do
     Repo.delete_all(UserToken.by_token_and_context_query(token, "session"))
     :ok
@@ -256,6 +272,7 @@ defmodule Greenprint.Users do
       {:error, :already_confirmed}
 
   """
+  @spec deliver_user_confirmation_instructions(User.t(), Types.url_fun()) :: Types.auth_result()
   def deliver_user_confirmation_instructions(%User{} = user, confirmation_url_fun)
       when is_function(confirmation_url_fun, 1) do
     if user.confirmed_at do
@@ -273,6 +290,7 @@ defmodule Greenprint.Users do
   If the token matches, the user account is marked as confirmed
   and the token is deleted.
   """
+  @spec confirm_user(Types.email_token()) :: {:ok, User.t()} | :error
   def confirm_user(token) do
     with {:ok, query} <- UserToken.verify_email_token_query(token, "confirm"),
          %User{} = user <- Repo.one(query),
@@ -283,6 +301,7 @@ defmodule Greenprint.Users do
     end
   end
 
+  @spec confirm_user_multi(User.t()) :: Types.multi()
   defp confirm_user_multi(user) do
     Ecto.Multi.new()
     |> Ecto.Multi.update(:user, User.confirm_changeset(user))
@@ -300,6 +319,7 @@ defmodule Greenprint.Users do
       {:ok, %{to: ..., body: ...}}
 
   """
+  @spec deliver_user_reset_password_instructions(User.t(), Types.url_fun()) :: Types.email_delivery_result()
   def deliver_user_reset_password_instructions(%User{} = user, reset_password_url_fun)
       when is_function(reset_password_url_fun, 1) do
     {encoded_token, user_token} = UserToken.build_email_token(user, "reset_password")
@@ -319,6 +339,7 @@ defmodule Greenprint.Users do
       nil
 
   """
+  @spec get_user_by_reset_password_token(Types.email_token()) :: User.t() | nil
   def get_user_by_reset_password_token(token) do
     with {:ok, query} <- UserToken.verify_email_token_query(token, "reset_password"),
          %User{} = user <- Repo.one(query) do
@@ -340,6 +361,7 @@ defmodule Greenprint.Users do
       {:error, %Ecto.Changeset{}}
 
   """
+  @spec reset_user_password(User.t(), Types.attrs()) :: Types.repo_result(User.t())
   def reset_user_password(user, attrs) do
     Ecto.Multi.new()
     |> Ecto.Multi.update(:user, User.password_changeset(user, attrs))

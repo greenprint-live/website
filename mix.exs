@@ -64,7 +64,10 @@ defmodule Greenprint.MixProject do
 
       {:dns_cluster, "~> 0.1.1"},
 
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+
+      # Static type analysis
+      {:dialyxir, "~> 1.3", only: [:dev], runtime: false}
     ]
   end
 

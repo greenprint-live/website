@@ -1,6 +1,23 @@
 defmodule Greenprint.Users.User do
+  @moduledoc """
+  User schema and changesets with comprehensive type specifications.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias Greenprint.Types
+
+  @type t :: %__MODULE__{
+    id: Types.id(),
+    email: Types.email(),
+    password: Types.password() | nil,
+    hashed_password: Types.hashed_password() | nil,
+    current_password: Types.password() | nil,
+    confirmed_at: Types.utc_datetime(),
+    inserted_at: Types.timestamp(),
+    updated_at: Types.timestamp()
+  }
 
   @derive {Jason.Encoder, only: [:id, :email, :confirmed_at, :inserted_at, :updated_at]}
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -38,6 +55,7 @@ defmodule Greenprint.Users.User do
       submitting the form), this option can be set to `false`.
       Defaults to `true`.
   """
+  @spec registration_changeset(t(), Types.attrs(), Types.opts()) :: Types.changeset(t())
   def registration_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:email, :password])
@@ -45,6 +63,7 @@ defmodule Greenprint.Users.User do
     |> validate_password(opts)
   end
 
+  @spec validate_email(Types.changeset(t()), Types.opts()) :: Types.changeset(t())
   defp validate_email(changeset, opts) do
     changeset
     |> validate_required([:email])
@@ -53,6 +72,7 @@ defmodule Greenprint.Users.User do
     |> maybe_validate_unique_email(opts)
   end
 
+  @spec validate_password(Types.changeset(t()), Types.opts()) :: Types.changeset(t())
   defp validate_password(changeset, opts) do
     changeset
     |> validate_required([:password])
@@ -64,6 +84,7 @@ defmodule Greenprint.Users.User do
     |> maybe_hash_password(opts)
   end
 
+  @spec maybe_hash_password(Types.changeset(t()), Types.opts()) :: Types.changeset(t())
   defp maybe_hash_password(changeset, opts) do
     hash_password? = Keyword.get(opts, :hash_password, true)
     password = get_change(changeset, :password)
@@ -81,6 +102,7 @@ defmodule Greenprint.Users.User do
     end
   end
 
+  @spec maybe_validate_unique_email(Types.changeset(t()), Types.opts()) :: Types.changeset(t())
   defp maybe_validate_unique_email(changeset, opts) do
     if Keyword.get(opts, :validate_email, true) do
       changeset
@@ -96,6 +118,7 @@ defmodule Greenprint.Users.User do
 
   It requires the email to change otherwise an error is added.
   """
+  @spec email_changeset(t(), Types.attrs(), Types.opts()) :: Types.changeset(t())
   def email_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:email])
@@ -118,6 +141,7 @@ defmodule Greenprint.Users.User do
       validations on a LiveView form), this option can be set to `false`.
       Defaults to `true`.
   """
+  @spec password_changeset(t(), Types.attrs(), Types.opts()) :: Types.changeset(t())
   def password_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:password])
@@ -128,6 +152,7 @@ defmodule Greenprint.Users.User do
   @doc """
   Confirms the account by setting `confirmed_at`.
   """
+  @spec confirm_changeset(t()) :: Types.changeset(t())
   def confirm_changeset(user) do
     now = DateTime.utc_now() |> DateTime.truncate(:second)
     change(user, confirmed_at: now)
@@ -139,6 +164,7 @@ defmodule Greenprint.Users.User do
   If there is no user or the user doesn't have a password, we call
   `Bcrypt.no_user_verify/0` to avoid timing attacks.
   """
+  @spec valid_password?(t() | nil, Types.password()) :: boolean()
   def valid_password?(%Greenprint.Users.User{hashed_password: hashed_password}, password)
       when is_binary(hashed_password) and byte_size(password) > 0 do
     Bcrypt.verify_pass(password, hashed_password)
@@ -152,6 +178,7 @@ defmodule Greenprint.Users.User do
   @doc """
   Validates the current password otherwise adds an error to the changeset.
   """
+  @spec validate_current_password(Types.changeset(t()), Types.password()) :: Types.changeset(t())
   def validate_current_password(changeset, password) do
     changeset = cast(changeset, %{current_password: password}, [:current_password])
 

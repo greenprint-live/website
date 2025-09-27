@@ -1,10 +1,15 @@
 defmodule GreenprintWeb.UserAuth do
+  @moduledoc """
+  User authentication and authorization with comprehensive type specifications.
+  """
+
   use GreenprintWeb, :verified_routes
 
   import Plug.Conn
   import Phoenix.Controller
 
-  alias Greenprint.Users
+  alias Greenprint.{Users, Types}
+  alias Greenprint.Users.User
 
   # Make the remember me cookie valid for 60 days.
   # If you want bump or reduce this value, also change
@@ -25,6 +30,7 @@ defmodule GreenprintWeb.UserAuth do
   disconnected on log out. The line can be safely removed
   if you are not using LiveView.
   """
+  @spec log_in_user(Types.conn(), User.t(), Types.params()) :: Types.conn()
   def log_in_user(conn, user, params \\ %{}) do
     token = Users.generate_user_session_token(user)
     user_return_to = get_session(conn, :user_return_to)
@@ -36,10 +42,12 @@ defmodule GreenprintWeb.UserAuth do
     |> redirect(to: user_return_to || signed_in_path(conn))
   end
 
+  @spec maybe_write_remember_me_cookie(Types.conn(), Types.session_token(), Types.params()) :: Types.conn()
   defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
     put_resp_cookie(conn, @remember_me_cookie, token, @remember_me_options)
   end
 
+  @spec maybe_write_remember_me_cookie(Types.conn(), Types.session_token(), Types.params()) :: Types.conn()
   defp maybe_write_remember_me_cookie(conn, _token, _params) do
     conn
   end
@@ -59,6 +67,7 @@ defmodule GreenprintWeb.UserAuth do
   #       |> put_session(:preferred_locale, preferred_locale)
   #     end
   #
+  @spec renew_session(Types.conn()) :: Types.conn()
   defp renew_session(conn) do
     delete_csrf_token()
 
@@ -72,6 +81,7 @@ defmodule GreenprintWeb.UserAuth do
 
   It clears all session data for safety. See renew_session.
   """
+  @spec log_out_user(Types.conn()) :: Types.conn()
   def log_out_user(conn) do
     user_token = get_session(conn, :user_token)
     user_token && Users.delete_user_session_token(user_token)
@@ -90,12 +100,14 @@ defmodule GreenprintWeb.UserAuth do
   Authenticates the user by looking into the session
   and remember me token.
   """
+  @spec fetch_current_user(Types.conn(), any()) :: Types.conn()
   def fetch_current_user(conn, _opts) do
     {user_token, conn} = ensure_user_token(conn)
     user = user_token && Users.get_user_by_session_token(user_token)
     assign(conn, :current_user, user)
   end
 
+  @spec ensure_user_token(Types.conn()) :: {Types.session_token() | nil, Types.conn()}
   defp ensure_user_token(conn) do
     if token = get_session(conn, :user_token) do
       {token, conn}
