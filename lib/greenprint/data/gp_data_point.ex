@@ -29,7 +29,7 @@ defmodule Greenprint.Data.GPDataPoint do
   @spec changeset(t(), Types.attrs()) :: Types.changeset(t())
   def changeset(gp_data_point, attrs) do
     gp_data_point
-    |> cast(attrs, [:value])
-    |> validate_required([:value])
+    |> cast(attrs, [:value, :owner_gp_data_source_id])
+    |> validate_required([:value, :owner_gp_data_source_id])
   end
 end

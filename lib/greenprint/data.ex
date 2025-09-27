@@ -464,6 +464,59 @@ defmodule Greenprint.Data do
   end
 
   @doc """
+  Gets recent data points for trend analysis.
+
+  ## Examples
+
+      iex> get_recent_data_points("data_source_id", 10)
+      [%GPDataPoint{}, ...]
+
+  """
+  @spec get_recent_data_points(Types.gp_data_source_id(), integer()) :: [GPDataPoint.t()]
+  def get_recent_data_points(data_source_id, limit \\ 10) when is_binary(data_source_id) do
+    from(dp in GPDataPoint,
+         where: dp.owner_gp_data_source_id == ^data_source_id,
+         order_by: [desc: dp.inserted_at],
+         limit: ^limit)
+    |> Repo.all()
+  end
+
+  @doc """
+  Gets data source with its latest data point and recent trend.
+
+  ## Examples
+
+      iex> get_data_source_with_latest("data_source_id")
+      %{data_source: %GPDataSource{}, latest: %GPDataPoint{}, trend: "up"}
+
+  """
+  @spec get_data_source_with_latest(Types.gp_data_source_id()) ::
+    %{data_source: GPDataSource.t() | nil, latest: GPDataPoint.t() | nil, trend: String.t()}
+  def get_data_source_with_latest(data_source_id) when is_binary(data_source_id) do
+    data_source = get_gp_data_source(data_source_id)
+    latest = get_latest_data_point(data_source_id)
+    recent_points = get_recent_data_points(data_source_id, 5)
+
+    trend = calculate_trend(recent_points)
+
+    %{
+      data_source: data_source,
+      latest: latest,
+      trend: trend
+    }
+  end
+
+  defp calculate_trend([]), do: "stable"
+  defp calculate_trend([_single]), do: "stable"
+  defp calculate_trend([latest, previous | _]) do
+    cond do
+      latest.value > previous.value -> "up"
+      latest.value < previous.value -> "down"
+      true -> "stable"
+    end
+  end
+
+  @doc """
   Gets aggregated statistics for data points within a time range.
 
   ## Examples

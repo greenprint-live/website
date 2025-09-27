@@ -61,7 +61,6 @@ defmodule GreenprintWeb.App.Auth.ForgotPassword do
 
     {:noreply,
      socket
-     |> put_flash(:info, info)
      |> redirect(to: ~p"/")}
   end
 
@@ -70,7 +69,6 @@ defmodule GreenprintWeb.App.Auth.ForgotPassword do
       {:ok, _} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Password reset successfully.")
          |> redirect(to: ~p"/auth/login")}
 
       {:error, changeset} ->
@@ -89,7 +87,6 @@ defmodule GreenprintWeb.App.Auth.ForgotPassword do
       assign(socket, user: user, token: token)
     else
       socket
-      |> put_flash(:error, "Reset password link is invalid or it has expired.")
       |> redirect(to: ~p"/")
     end
   end

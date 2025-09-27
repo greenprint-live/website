@@ -40,7 +40,6 @@ defmodule GreenprintWeb.App.Auth.Confirm do
       {:ok, _} ->
         {:noreply,
          socket
-         |> put_flash(:info, "User confirmed successfully.")
          |> redirect(to: ~p"/")}
 
       :error ->
@@ -55,7 +54,6 @@ defmodule GreenprintWeb.App.Auth.Confirm do
           %{} ->
             {:noreply,
              socket
-             |> put_flash(:error, "User confirmation link is invalid or it has expired.")
              |> redirect(to: ~p"/")}
         end
     end
@@ -74,7 +72,6 @@ defmodule GreenprintWeb.App.Auth.Confirm do
 
     {:noreply,
      socket
-     |> put_flash(:info, info)
      |> redirect(to: ~p"/")}
   end
 end

@@ -61,7 +61,6 @@
     ];
 </script>
 
-<Navbar {current_user} />
 <AuthLayout {current_user}>
     <AuthForm
         title="Sign in to your account"

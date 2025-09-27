@@ -8,3 +8,25 @@ export interface GPHub {
     insertedAt: string;
     updatedAt: string;
 }
+
+export interface GPDataSource {
+    id: string;
+    ownerGpHubId: string;
+    displayName: string;
+    description: string;
+    type: string;
+    insertedAt: string;
+    updatedAt: string;
+    // Real data fields (optional for backward compatibility)
+    currentValue?: number | null;
+    lastUpdated?: string | null;
+    trend?: "up" | "down" | "stable";
+    status?: "active" | "inactive" | "error";
+}
+
+export interface DetectedDataSource {
+    type: string;
+    displayName: string;
+    description: string;
+    selected: boolean;
+}

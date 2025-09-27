@@ -29,11 +29,8 @@ defmodule GreenprintWeb.App.Auth.Settings do
   def mount(%{"token" => token}, _session, socket) do
     socket =
       case Users.update_user_email(socket.assigns.current_user, token) do
-        :ok ->
-          put_flash(socket, :info, "Email changed successfully.")
-
-        _ ->
-          put_flash(socket, :error, "Email change link is invalid or it has expired.")
+        :ok -> socket
+        _ -> socket
       end
 
     {:ok, push_navigate(socket, to: ~p"/auth/settings")}
@@ -83,7 +80,7 @@ defmodule GreenprintWeb.App.Auth.Settings do
         )
 
         info = "A link to confirm your email change has been sent to the new address."
-        {:noreply, socket |> put_flash(:info, info) |> assign(email_form_current_password: nil)}
+        {:noreply, socket |> assign(email_form_current_password: nil)}
 
       {:error, changeset} ->
         {:noreply, assign(socket, :email_form, to_form(Map.put(changeset, :action, :insert)))}

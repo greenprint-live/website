@@ -4,6 +4,7 @@ import { Socket } from "phoenix";
 import "phoenix_html";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "topbar";
+import { RealtimeData } from "./hooks/realtime_data.js";
 
 const componentModules = import.meta.glob("../svelte/**/*.svelte", { eager: true });
 const Components = Object.fromEntries(
@@ -15,7 +16,8 @@ const Components = Object.fromEntries(
 
 const hooks = {
     ...createLiveJsonHooks(),
-    ...getHooks(Components)
+    ...getHooks(Components),
+    RealtimeData
 };
 
 const csrfTokenTag = document.querySelector("meta[name='csrf-token']");
@@ -36,4 +38,4 @@ liveSocket.connect();
 // >> liveSocket.enableDebug()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
-window.liveSocket = liveSocket;
+(window as any).liveSocket = liveSocket;

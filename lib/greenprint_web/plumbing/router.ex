@@ -15,6 +15,8 @@ defmodule GreenprintWeb.Plumbing.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug :fetch_current_user
   end
 
   scope "/", GreenprintWeb do
@@ -26,10 +28,14 @@ defmodule GreenprintWeb.Plumbing.Router do
     end
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", GreenprintWeb do
-  #   pipe_through :api
-  # end
+  # API routes
+  scope "/api", GreenprintWeb do
+    pipe_through [:api, :require_authenticated_user]
+
+    post "/hubs", HubController, :create
+    post "/hubs/:hub_id/data_sources", DataSourceController, :create_batch
+    post "/data_sources/:data_source_id/data_points", DataPointController, :create
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:greenprint, :dev_routes) do
@@ -70,6 +76,7 @@ defmodule GreenprintWeb.Plumbing.Router do
     live_session :require_authenticated_user,
       on_mount: [{GreenprintWeb.UserAuth, :ensure_authenticated}] do
       live "/dashboard", App.Dashboard, :index
+      live "/dashboard/hub/:hub_id", App.HubDisplay, :index
       live "/auth/settings", App.Auth.Settings, :index
       live "/auth/settings/confirm_email/:token", App.Auth.Settings, :confirm_email
     end
