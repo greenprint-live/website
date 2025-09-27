@@ -1,17 +1,17 @@
 defmodule GreenprintWeb.App.Dashboard do
-  @moduledoc """
-  Dashboard LiveView with comprehensive type specifications.
-  """
-
   use GreenprintWeb, :live_view
 
   alias Greenprint.Types
+  alias Greenprint.Data
 
   @impl true
   @spec render(Types.assigns()) :: Phoenix.LiveView.Rendered.t()
   def render(assigns) do
+    hubs = Data.list_user_gp_hubs(assigns.current_user.id)
+    assigns = assign(assigns, :props, %{hubs: hubs, current_user: assigns.current_user})
+
     ~H"""
-      <.svelte name="app/pages/Dashboard" props={%{current_user: @current_user}} socket={@socket} />
+      <.svelte name="app/pages/Dashboard" props={@props} socket={@socket} />
     """
   end
 

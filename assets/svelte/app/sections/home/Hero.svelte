@@ -18,7 +18,9 @@
 			
 			<div class="flex justify-center">
 				<Button size="lg" class="text-lg px-8 py-3">
-					Take Action
+					<a href="/dashboard" aria-label="Dashboard">
+						Take Action
+					</a>
 				</Button>
 			</div>
 		</div>

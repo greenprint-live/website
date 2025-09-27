@@ -16,7 +16,7 @@
     let { socket, current_user }: Props = $props();
 </script>
 
-<Navbar current_user={current_user} />
+<Navbar current_user={current_user} fixed={true} />
 <Hero />
 <Features />
 <Pricing />
