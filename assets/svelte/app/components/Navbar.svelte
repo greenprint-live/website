@@ -15,14 +15,22 @@
     </a>
 
     {#if current_user}
-        <Button>
-            <a href="/dashboard" aria-label="Dashboard">
-                Dashboard
-            </a>
-        </Button>
+        <div class="flex flex-row items-center gap-2">
+            <Button>
+                <a href="/dashboard" aria-label="Dashboard">
+                    Dashboard
+                </a>
+            </Button>
+
+            <Button>
+                <a href="/auth/settings" aria-label="Account">
+                    Account
+                </a>
+            </Button>
+        </div>
     {:else}
         <Button>
-            <a href="/users/log_in" aria-label="Login">
+            <a href="/auth/login" aria-label="Login">
                 Log in
             </a>
         </Button>

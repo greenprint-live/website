@@ -1,47 +1,25 @@
-defmodule GreenprintWeb.UserRegistrationLive do
+defmodule GreenprintWeb.App.Auth.Register do
   use GreenprintWeb, :live_view
 
   alias Greenprint.Users
   alias Greenprint.Users.User
 
+  @impl true
   def render(assigns) do
+    form_errors = if assigns[:form], do: translate_errors(assigns.form), else: %{}
+
+    props = %{
+      errors: form_errors,
+      check_errors: Map.get(assigns, :check_errors, false),
+      trigger_submit: Map.get(assigns, :trigger_submit, false)
+    }
+
     ~H"""
-    <div class="mx-auto max-w-sm">
-      <.header class="text-center">
-        Register for an account
-        <:subtitle>
-          Already registered?
-          <.link navigate={~p"/users/log_in"} class="font-semibold text-brand hover:underline">
-            Log in
-          </.link>
-          to your account now.
-        </:subtitle>
-      </.header>
-
-      <.simple_form
-        for={@form}
-        id="registration_form"
-        phx-submit="save"
-        phx-change="validate"
-        phx-trigger-action={@trigger_submit}
-        action={~p"/users/log_in?_action=registered"}
-        method="post"
-      >
-        <.error :if={@check_errors}>
-          Oops, something went wrong! Please check the errors below.
-        </.error>
-
-        <.input field={@form[:email]} type="email" label="Email" required />
-        <.input field={@form[:password]} type="password" label="Password" required />
-
-        <:actions>
-          <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
-        </:actions>
-      </.simple_form>
-    </div>
+    <.svelte name="app/pages/auth/Register" props={props} socket={@socket} />
     """
   end
 
+  @impl true
   def mount(_params, _session, socket) do
     changeset = Users.change_user_registration(%User{})
 
@@ -53,15 +31,17 @@ defmodule GreenprintWeb.UserRegistrationLive do
     {:ok, socket, temporary_assigns: [form: nil]}
   end
 
+  @impl true
   def handle_event("save", %{"user" => user_params}, socket) do
     case Users.register_user(user_params) do
       {:ok, user} ->
         {:ok, _} =
           Users.deliver_user_confirmation_instructions(
             user,
-            &url(~p"/users/confirm/#{&1}")
+            &url(~p"/auth/confirm/#{&1}")
           )
 
+        # Create a form for auto-login after registration
         changeset = Users.change_user_registration(user)
         {:noreply, socket |> assign(trigger_submit: true) |> assign_form(changeset)}
 
@@ -70,6 +50,7 @@ defmodule GreenprintWeb.UserRegistrationLive do
     end
   end
 
+  @impl true
   def handle_event("validate", %{"user" => user_params}, socket) do
     changeset = Users.change_user_registration(%User{}, user_params)
     {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
@@ -83,5 +64,13 @@ defmodule GreenprintWeb.UserRegistrationLive do
     else
       assign(socket, form: form)
     end
+  end
+
+  defp translate_errors(form) do
+    form.errors
+    |> Enum.reduce(%{}, fn {field, {message, _opts}}, acc ->
+      field_errors = Map.get(acc, field, [])
+      Map.put(acc, field, [message | field_errors])
+    end)
   end
 end

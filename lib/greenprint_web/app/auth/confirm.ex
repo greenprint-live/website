@@ -1,35 +1,34 @@
-defmodule GreenprintWeb.UserConfirmationLive do
+defmodule GreenprintWeb.App.Auth.Confirm do
   use GreenprintWeb, :live_view
 
   alias Greenprint.Users
 
-  def render(%{live_action: :edit} = assigns) do
+  @impl true
+  def render(assigns) do
+    props = %{
+      mode: Map.get(assigns, :mode, "confirm"),
+      token: Map.get(assigns, :token)
+    }
+
     ~H"""
-    <div class="mx-auto max-w-sm">
-      <.header class="text-center">Confirm Account</.header>
-
-      <.simple_form for={@form} id="confirmation_form" phx-submit="confirm_account">
-        <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
-        <:actions>
-          <.button phx-disable-with="Confirming..." class="w-full">Confirm my account</.button>
-        </:actions>
-      </.simple_form>
-
-      <p class="text-center mt-4">
-        <.link href={~p"/users/register"}>Register</.link>
-        | <.link href={~p"/users/log_in"}>Log in</.link>
-      </p>
-    </div>
+    <.svelte name="app/pages/auth/Confirm" props={props} socket={@socket} />
     """
   end
 
+  # Email confirmation with token
+  @impl true
   def mount(%{"token" => token}, _session, socket) do
     form = to_form(%{"token" => token}, as: "user")
-    {:ok, assign(socket, form: form), temporary_assigns: [form: nil]}
+    {:ok, assign(socket, form: form, mode: "confirm", token: token), temporary_assigns: [form: nil]}
   end
 
-  # Do not log in the user after confirmation to avoid a
-  # leaked token giving the user access to the account.
+  # Resend confirmation instructions
+  @impl true
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, form: to_form(%{}, as: "user"), mode: "resend")}
+  end
+
+  @impl true
   def handle_event("confirm_account", %{"user" => %{"token" => token}}, socket) do
     case Users.confirm_user(token) do
       {:ok, _} ->
@@ -54,5 +53,23 @@ defmodule GreenprintWeb.UserConfirmationLive do
              |> redirect(to: ~p"/")}
         end
     end
+  end
+
+  @impl true
+  def handle_event("send_instructions", %{"user" => %{"email" => email}}, socket) do
+    if user = Users.get_user_by_email(email) do
+      Users.deliver_user_confirmation_instructions(
+        user,
+        &url(~p"/auth/confirm/#{&1}")
+      )
+    end
+
+    info =
+      "If your email is in our system and it has not been confirmed yet, you will receive an email with instructions shortly."
+
+    {:noreply,
+     socket
+     |> put_flash(:info, info)
+     |> redirect(to: ~p"/")}
   end
 end

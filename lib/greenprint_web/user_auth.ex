@@ -158,7 +158,7 @@ defmodule GreenprintWeb.UserAuth do
       socket =
         socket
         |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
-        |> Phoenix.LiveView.redirect(to: ~p"/users/log_in")
+        |> Phoenix.LiveView.redirect(to: ~p"/auth/login")
 
       {:halt, socket}
     end
@@ -208,7 +208,7 @@ defmodule GreenprintWeb.UserAuth do
       conn
       |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
-      |> redirect(to: ~p"/users/log_in")
+      |> redirect(to: ~p"/auth/login")
       |> halt()
     end
   end
@@ -225,5 +225,5 @@ defmodule GreenprintWeb.UserAuth do
 
   defp maybe_store_return_to(conn), do: conn
 
-  defp signed_in_path(_conn), do: ~p"/"
+  defp signed_in_path(_conn), do: ~p"/dashboard"
 end
