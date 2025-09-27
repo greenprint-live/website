@@ -1,5 +1,8 @@
 <script lang="ts">
     import FormInput from "../../components/auth/FormInput.svelte";
+    import Navbar from "../../components/Navbar.svelte";
+    import { Button } from "$lib/components/ui/button";
+    import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "$lib/components/ui/card";
     import type { LiveSocket } from "phoenix_live_view";
     import type { User } from "$lib/model/User";
 
@@ -44,96 +47,115 @@
 
 </script>
 
-<div class="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Account Settings</h1>
-        <p class="mt-2 text-sm text-gray-600">Manage your account email address and password settings</p>
-    </div>
+<div class="min-h-screen bg-background">
+    <Navbar {current_user} />
+    
+    <div class="pt-16">
+        <section class="py-12 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-2xl mx-auto">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-foreground">Account Settings</h1>
+                    <p class="mt-2 text-sm text-muted-foreground">Manage your account email address and password settings</p>
+                </div>
 
-    <div class="space-y-12 divide-y divide-gray-200">
-        <!-- Email Settings -->
-        <div class="pt-8 first:pt-0">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">Email Address</h2>
-            <form phx-submit="update_email" class="space-y-4">
-                
-                <FormInput
-                    label="Email"
-                    name="email"
-                    type="email"
-                    required={true}
-                    value={current_user.email}
-                    error={emailErrors.email?.[0]}
-                />
-                
-                <FormInput
-                    label="Current password"
-                    name="current_password"
-                    type="password"
-                    required={true}
-                    error={emailErrors.current_password?.[0]}
-                />
+                <div class="space-y-6">
+                    <!-- Email Settings -->
+                    <Card class="backdrop-blur-sm bg-card/80 border-border/40">
+                        <CardHeader>
+                            <CardTitle class="text-lg">Email Address</CardTitle>
+                            <CardDescription>Update your email address and confirm with your current password</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <form class="space-y-4" {...{"phx-submit": "update_email"}}>
+                                <FormInput
+                                    label="Email"
+                                    name="email"
+                                    type="email"
+                                    required={true}
+                                    value={current_user.email}
+                                    error={emailErrors.email?.[0]}
+                                />
+                                
+                                <FormInput
+                                    label="Current password"
+                                    name="current_password"
+                                    type="password"
+                                    required={true}
+                                    error={emailErrors.current_password?.[0]}
+                                />
 
-                <button 
-                    type="submit"
-                    phx-disable-with="Changing..."
-                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                >
-                    Change Email
-                </button>
-            </form>
-        </div>
+                                <Button 
+                                    type="submit"
+                                    class="w-full sm:w-auto"
+                                    {...{"phx-disable-with": "Changing..."}}
+                                >
+                                    Change Email
+                                </Button>
+                            </form>
+                        </CardContent>
+                    </Card>
 
-        <!-- Password Settings -->
-        <div class="pt-8">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">Password</h2>
-            <form phx-submit="update_password" class="space-y-4">
-                
-                <FormInput
-                    label="New password"
-                    name="password"
-                    type="password"
-                    required={true}
-                    placeholder="Minimum 12 characters"
-                    error={passwordErrors.password?.[0]}
-                />
-                
-                <FormInput
-                    label="Confirm new password"
-                    name="password_confirmation"
-                    type="password"
-                    required={true}
-                    error={passwordErrors.password_confirmation?.[0]}
-                />
-                
-                <FormInput
-                    label="Current password"
-                    name="current_password_for_password"
-                    type="password"
-                    required={true}
-                    error={passwordErrors.current_password?.[0]}
-                />
+                    <!-- Password Settings -->
+                    <Card class="backdrop-blur-sm bg-card/80 border-border/40">
+                        <CardHeader>
+                            <CardTitle class="text-lg">Password</CardTitle>
+                            <CardDescription>Update your password to keep your account secure</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <form class="space-y-4" {...{"phx-submit": "update_password"}}>
+                                <FormInput
+                                    label="New password"
+                                    name="password"
+                                    type="password"
+                                    required={true}
+                                    placeholder="Minimum 12 characters"
+                                    error={passwordErrors.password?.[0]}
+                                />
+                                
+                                <FormInput
+                                    label="Confirm new password"
+                                    name="password_confirmation"
+                                    type="password"
+                                    required={true}
+                                    error={passwordErrors.password_confirmation?.[0]}
+                                />
+                                
+                                <FormInput
+                                    label="Current password"
+                                    name="current_password_for_password"
+                                    type="password"
+                                    required={true}
+                                    error={passwordErrors.current_password?.[0]}
+                                />
 
-                <button 
-                    type="submit"
-                    phx-disable-with="Changing..."
-                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                >
-                    Change Password
-                </button>
-            </form>
-        </div>
+                                <Button 
+                                    type="submit"
+                                    class="w-full sm:w-auto"
+                                    {...{"phx-disable-with": "Changing..."}}
+                                >
+                                    Change Password
+                                </Button>
+                            </form>
+                        </CardContent>
+                    </Card>
 
-        <!-- Account Actions -->
-        <div class="pt-8">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">Account Actions</h2>
-            <div class="flex flex-col sm:flex-row gap-4">
-                <button 
-                    onclick={handleLogout}
-                    class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Log Out
-                </button>
+                    <!-- Account Actions -->
+                    <Card class="backdrop-blur-sm bg-card/80 border-border/40">
+                        <CardHeader>
+                            <CardTitle class="text-lg">Account Actions</CardTitle>
+                            <CardDescription>Manage your account and sign out</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Button 
+                                onclick={handleLogout}
+                                class="w-full sm:w-auto"
+                            >
+                                Log Out
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
-        </div>
+        </section>
     </div>
 </div>

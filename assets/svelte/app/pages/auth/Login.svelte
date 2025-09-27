@@ -8,9 +8,10 @@
         socket: any;
         email?: string;
         errors?: Record<string, string[]>;
+        current_user?: any;
     }
 
-    let { socket, email = "", errors = {} }: Props = $props();
+    let { socket, email = "", errors = {}, current_user }: Props = $props();
 
     let isSubmitting = $state(false);
 
@@ -59,7 +60,7 @@
     ];
 </script>
 
-<AuthLayout>
+<AuthLayout {current_user}>
     <AuthForm
         title="Sign in to your account"
         subtitle="Welcome back! Please sign in to continue."

@@ -1,14 +1,18 @@
 <script lang="ts">
     import AuthLayout from "../../components/auth/AuthLayout.svelte";
     import FormInput from "../../components/auth/FormInput.svelte";
+    import { Button } from "$lib/components/ui/button";
+    import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "$lib/components/ui/card";
+    import { Alert } from "$lib/components/ui/alert";
 
     interface Props {
         errors?: Record<string, string[]>;
         checkErrors?: boolean;
         trigger_submit?: boolean;
+        current_user?: any;
     }
 
-    let { errors = {}, checkErrors = false, trigger_submit = false }: Props = $props();
+    let { errors = {}, checkErrors = false, trigger_submit = false, current_user }: Props = $props();
 
     // Auto-login after successful registration
     $effect(() => {
@@ -48,55 +52,60 @@
     });
 </script>
 
-<AuthLayout>
-    <div class="mx-auto max-w-sm">
-        <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold tracking-tight text-gray-900">Create your account</h1>
-            <p class="mt-2 text-sm text-gray-600">Join us today! Fill out the form below to get started.</p>
-        </div>
-
-        <!-- Use standard Phoenix form with phx-submit -->
-        <form phx-submit="save" class="space-y-6">
-            {#if checkErrors}
-                <div class="rounded-md bg-red-50 p-4">
-                    <div class="text-sm text-red-800">
-                        Oops, something went wrong! Please check the errors below.
-                    </div>
+<AuthLayout {current_user}>
+    <Card class="w-full backdrop-blur-sm bg-card/80 border-border/40 shadow-xl">
+        <CardHeader class="text-center space-y-1">
+            <CardTitle class="text-2xl font-bold tracking-tight text-foreground">Create your account</CardTitle>
+            <CardDescription class="text-muted-foreground">Join us today! Fill out the form below to get started.</CardDescription>
+        </CardHeader>
+        
+        <CardContent>
+            <!-- Use standard Phoenix form with phx-submit -->
+            <form class="space-y-6" {...{"phx-submit": "save"}}>
+                {#if checkErrors}
+                    <Alert variant="destructive">
+                        <div class="text-sm">
+                            Oops, something went wrong! Please check the errors below.
+                        </div>
+                    </Alert>
+                {/if}
+                
+                <div class="space-y-4">
+                    <FormInput
+                        label="Email address"
+                        name="user[email]"
+                        type="email"
+                        required={true}
+                        autocomplete="email"
+                        error={errors.email?.[0]}
+                    />
+                    <FormInput
+                        label="Password"
+                        name="user[password]"
+                        type="password"
+                        required={true}
+                        autocomplete="new-password"
+                        placeholder="Minimum 12 characters"
+                        error={errors.password?.[0]}
+                    />
                 </div>
-            {/if}
-            
-            <FormInput
-                label="Email address"
-                name="user[email]"
-                type="email"
-                required={true}
-                autocomplete="email"
-                error={errors.email?.[0]}
-            />
-            <FormInput
-                label="Password"
-                name="user[password]"
-                type="password"
-                required={true}
-                autocomplete="new-password"
-                placeholder="Minimum 12 characters"
-                error={errors.password?.[0]}
-            />
 
-            <button 
-                type="submit"
-                phx-disable-with="Creating account..."
-                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-                Create account
-                <span aria-hidden="true" class="ml-2">→</span>
-            </button>
-        </form>
+                <Button 
+                    type="submit"
+                    class="w-full"
+                    size="lg"
+                    {...{"phx-disable-with": "Creating account..."}}
+                >
+                    Create account
+                    <span aria-hidden="true" class="ml-2">→</span>
+                </Button>
+            </form>
 
-        <div class="mt-6 text-center text-sm">
-            <a href="/auth/login" class="font-medium text-indigo-600 hover:text-indigo-500">
-                Already have an account? Sign in
-            </a>
-        </div>
-    </div>
+            <div class="mt-6 text-center text-sm">
+                <a href="/auth/login" class="font-medium text-primary hover:text-primary/80 transition-colors">
+                    Already have an account? Sign in
+                </a>
+            </div>
+        </CardContent>
+    </Card>
 </AuthLayout>

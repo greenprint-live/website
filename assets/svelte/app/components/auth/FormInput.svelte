@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { Input } from "$lib/components/ui/input";
+    import { Label } from "$lib/components/ui/label";
+    
     interface Props {
         label: string;
         name: string;
@@ -24,31 +27,26 @@
     let inputId = `input-${name}`;
 </script>
 
-<div>
-    <label for={inputId} class="block text-sm font-medium text-gray-700">
+<div class="space-y-2">
+    <Label for={inputId} class="text-foreground font-medium">
         {label}
         {#if required}
-            <span class="text-red-500">*</span>
+            <span class="text-destructive">*</span>
         {/if}
-    </label>
-    <div class="mt-1">
-        <input
-            {type}
-            {name}
-            id={inputId}
-            {required}
-            {placeholder}
-            {value}
-            autocomplete={autocomplete}
-            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            class:border-red-300={error}
-            class:text-red-900={error}
-            class:placeholder-red-300={error}
-            class:focus:ring-red-500={error}
-            class:focus:border-red-500={error}
-        />
-    </div>
+    </Label>
+    <Input
+        {type}
+        {name}
+        id={inputId}
+        {required}
+        {placeholder}
+        {value}
+        autocomplete={autocomplete as any}
+        class={error ? "border-destructive focus-visible:ring-destructive/20" : "border-border/40 hover:border-border/60"}
+        aria-invalid={error ? "true" : "false"}
+        aria-describedby={error ? `${inputId}-error` : undefined}
+    />
     {#if error}
-        <p class="mt-2 text-sm text-red-600">{error}</p>
+        <p id="{inputId}-error" class="text-sm text-destructive">{error}</p>
     {/if}
 </div>
