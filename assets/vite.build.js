@@ -9,9 +9,9 @@ if (deploy) {
 }
 
 /**
- * @param {string} command 
- * @param {string[]} args 
- * @param {Object} options 
+ * @param {string} command
+ * @param {string[]} args
+ * @param {Object} options
  * @returns {Promise<void>}
  */
 function runCommand(command, args, options = {}) {

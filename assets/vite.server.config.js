@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
     plugins: [
         svelte({
-            configFile: "./svelte.config.js",
+            configFile: "./svelte.config.js"
         })
     ],
     build: {

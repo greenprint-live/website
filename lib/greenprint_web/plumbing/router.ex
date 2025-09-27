@@ -21,6 +21,7 @@ defmodule GreenprintWeb.Plumbing.Router do
     pipe_through :browser
 
     live "/", App, :index
+    live "/dashboard", App.Dashboard, :index
   end
 
   # Other scopes may use custom stacks.
