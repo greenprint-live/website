@@ -1,9 +1,14 @@
 defmodule GreenprintWeb.App.Auth.Settings do
+  @moduledoc """
+  User settings LiveView with comprehensive type specifications.
+  """
+
   use GreenprintWeb, :live_view
 
-  alias Greenprint.Users
+  alias Greenprint.{Users, Types}
 
   @impl true
+  @spec render(Types.assigns()) :: Phoenix.LiveView.Rendered.t()
   def render(assigns) do
     email_errors = if assigns[:email_form], do: translate_errors(assigns.email_form), else: %{}
     password_errors = if assigns[:password_form], do: translate_errors(assigns.password_form), else: %{}
@@ -20,20 +25,20 @@ defmodule GreenprintWeb.App.Auth.Settings do
   end
 
   @impl true
+  @spec mount(Types.lv_params(), Types.lv_session(), Types.socket()) :: Types.lv_mount_result()
   def mount(%{"token" => token}, _session, socket) do
     socket =
       case Users.update_user_email(socket.assigns.current_user, token) do
         :ok ->
           put_flash(socket, :info, "Email changed successfully.")
 
-        :error ->
+        _ ->
           put_flash(socket, :error, "Email change link is invalid or it has expired.")
       end
 
     {:ok, push_navigate(socket, to: ~p"/auth/settings")}
   end
 
-  @impl true
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
     email_changeset = Users.change_user_email(user)
@@ -52,6 +57,7 @@ defmodule GreenprintWeb.App.Auth.Settings do
   end
 
   @impl true
+  @spec handle_event(Types.event_name(), Types.event_params(), Types.socket()) :: Types.lv_event_result()
   def handle_event("validate_email", params, socket) do
     %{"current_password" => password, "user" => user_params} = params
 
@@ -64,7 +70,6 @@ defmodule GreenprintWeb.App.Auth.Settings do
     {:noreply, assign(socket, email_form: email_form, email_form_current_password: password)}
   end
 
-  @impl true
   def handle_event("update_email", params, socket) do
     %{"current_password" => password, "user" => user_params} = params
     user = socket.assigns.current_user
@@ -85,7 +90,6 @@ defmodule GreenprintWeb.App.Auth.Settings do
     end
   end
 
-  @impl true
   def handle_event("validate_password", params, socket) do
     %{"current_password" => password, "user" => user_params} = params
 
@@ -98,7 +102,6 @@ defmodule GreenprintWeb.App.Auth.Settings do
     {:noreply, assign(socket, password_form: password_form, current_password: password)}
   end
 
-  @impl true
   def handle_event("update_password", params, socket) do
     %{"current_password" => password, "user" => user_params} = params
     user = socket.assigns.current_user
@@ -118,6 +121,7 @@ defmodule GreenprintWeb.App.Auth.Settings do
   end
 
 
+  @spec translate_errors(Types.form()) :: Types.form_errors()
   defp translate_errors(form) do
     form.errors
     |> Enum.reduce(%{}, fn {field, {message, _opts}}, acc ->

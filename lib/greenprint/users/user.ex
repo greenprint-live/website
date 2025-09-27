@@ -10,13 +10,13 @@ defmodule Greenprint.Users.User do
 
   @type t :: %__MODULE__{
     id: Types.id(),
-    email: Types.email(),
+    email: Types.email() | nil,
     password: Types.password() | nil,
     hashed_password: Types.hashed_password() | nil,
     current_password: Types.password() | nil,
     confirmed_at: Types.utc_datetime(),
-    inserted_at: Types.timestamp(),
-    updated_at: Types.timestamp()
+    inserted_at: Types.timestamp() | nil,
+    updated_at: Types.timestamp() | nil
   }
 
   @derive {Jason.Encoder, only: [:id, :email, :confirmed_at, :inserted_at, :updated_at]}
@@ -55,7 +55,7 @@ defmodule Greenprint.Users.User do
       submitting the form), this option can be set to `false`.
       Defaults to `true`.
   """
-  @spec registration_changeset(t(), Types.attrs(), Types.opts()) :: Types.changeset(t())
+  @spec registration_changeset(t() | Types.changeset(t()), Types.attrs(), Types.opts()) :: Types.changeset(t())
   def registration_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:email, :password])
@@ -152,7 +152,7 @@ defmodule Greenprint.Users.User do
   @doc """
   Confirms the account by setting `confirmed_at`.
   """
-  @spec confirm_changeset(t()) :: Types.changeset(t())
+  @spec confirm_changeset(t() | Types.changeset(t())) :: Types.changeset(t())
   def confirm_changeset(user) do
     now = DateTime.utc_now() |> DateTime.truncate(:second)
     change(user, confirmed_at: now)

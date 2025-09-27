@@ -1,9 +1,14 @@
 defmodule GreenprintWeb.App.Auth.Confirm do
+  @moduledoc """
+  Email confirmation LiveView with comprehensive type specifications.
+  """
+
   use GreenprintWeb, :live_view
 
-  alias Greenprint.Users
+  alias Greenprint.{Users, Types}
 
   @impl true
+  @spec render(Types.assigns()) :: Phoenix.LiveView.Rendered.t()
   def render(assigns) do
     props = %{
       mode: Map.get(assigns, :mode, "confirm"),
@@ -17,18 +22,19 @@ defmodule GreenprintWeb.App.Auth.Confirm do
 
   # Email confirmation with token
   @impl true
+  @spec mount(Types.lv_params(), Types.lv_session(), Types.socket()) :: Types.lv_mount_result()
   def mount(%{"token" => token}, _session, socket) do
     form = to_form(%{"token" => token}, as: "user")
     {:ok, assign(socket, form: form, mode: "confirm", token: token), temporary_assigns: [form: nil]}
   end
 
   # Resend confirmation instructions
-  @impl true
   def mount(_params, _session, socket) do
     {:ok, assign(socket, form: to_form(%{}, as: "user"), mode: "resend")}
   end
 
   @impl true
+  @spec handle_event(Types.event_name(), Types.event_params(), Types.socket()) :: Types.lv_event_result()
   def handle_event("confirm_account", %{"user" => %{"token" => token}}, socket) do
     case Users.confirm_user(token) do
       {:ok, _} ->
@@ -55,7 +61,6 @@ defmodule GreenprintWeb.App.Auth.Confirm do
     end
   end
 
-  @impl true
   def handle_event("send_instructions", %{"user" => %{"email" => email}}, socket) do
     if user = Users.get_user_by_email(email) do
       Users.deliver_user_confirmation_instructions(

@@ -1,9 +1,14 @@
 defmodule GreenprintWeb.App.Auth.ForgotPassword do
+  @moduledoc """
+  Forgot/Reset Password LiveView with comprehensive type specifications.
+  """
+
   use GreenprintWeb, :live_view
 
-  alias Greenprint.Users
+  alias Greenprint.{Users, Types}
 
   @impl true
+  @spec render(Types.assigns()) :: Phoenix.LiveView.Rendered.t()
   def render(assigns) do
     form_errors = if assigns[:form], do: translate_errors(assigns.form), else: %{}
 
@@ -18,13 +23,9 @@ defmodule GreenprintWeb.App.Auth.ForgotPassword do
     """
   end
 
-  # Forgot password mode
-  @impl true
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, form: to_form(%{}, as: "user"), mode: "forgot")}
-  end
-
   # Reset password mode with token
+  @impl true
+  @spec mount(Types.lv_params(), Types.lv_session(), Types.socket()) :: Types.lv_mount_result()
   def mount(%{"token" => token}, _session, socket) do
     socket = assign_user_and_token(socket, %{"token" => token})
 
@@ -40,7 +41,13 @@ defmodule GreenprintWeb.App.Auth.ForgotPassword do
     {:ok, assign_form(socket, form_source) |> assign(mode: "reset", token: token), temporary_assigns: [form: nil]}
   end
 
+  # Forgot password mode
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, form: to_form(%{}, as: "user"), mode: "forgot")}
+  end
+
   @impl true
+  @spec handle_event(Types.event_name(), Types.event_params(), Types.socket()) :: Types.lv_event_result()
   def handle_event("send_email", %{"user" => %{"email" => email}}, socket) do
     if user = Users.get_user_by_email(email) do
       Users.deliver_user_reset_password_instructions(
@@ -58,7 +65,6 @@ defmodule GreenprintWeb.App.Auth.ForgotPassword do
      |> redirect(to: ~p"/")}
   end
 
-  @impl true
   def handle_event("reset_password", %{"user" => user_params}, socket) do
     case Users.reset_user_password(socket.assigns.user, user_params) do
       {:ok, _} ->
@@ -72,12 +78,12 @@ defmodule GreenprintWeb.App.Auth.ForgotPassword do
     end
   end
 
-  @impl true
   def handle_event("validate", %{"user" => user_params}, socket) do
     changeset = Users.change_user_password(socket.assigns.user, user_params)
     {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
   end
 
+  @spec assign_user_and_token(Types.socket(), map()) :: Types.socket()
   defp assign_user_and_token(socket, %{"token" => token}) do
     if user = Users.get_user_by_reset_password_token(token) do
       assign(socket, user: user, token: token)
@@ -88,10 +94,12 @@ defmodule GreenprintWeb.App.Auth.ForgotPassword do
     end
   end
 
+  @spec assign_form(Types.socket(), map()) :: Types.socket()
   defp assign_form(socket, %{} = source) do
     assign(socket, :form, to_form(source, as: "user"))
   end
 
+  @spec translate_errors(Types.form()) :: Types.form_errors()
   defp translate_errors(form) do
     form.errors
     |> Enum.reduce(%{}, fn {field, {message, _opts}}, acc ->

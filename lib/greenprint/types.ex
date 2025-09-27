@@ -61,6 +61,27 @@ defmodule Greenprint.Types do
   @type socket :: Phoenix.LiveView.Socket.t()
   @type live_action :: atom()
   @type assigns :: map()
+  @type lv_params :: map()
+  @type lv_session :: map()
+  @type lv_mount_result :: {:ok, socket()} | {:ok, socket(), keyword()}
+  @type lv_event_result :: {:noreply, socket()} | {:reply, map(), socket()}
+  @type lv_info_result :: {:noreply, socket()}
+  @type flash_kind :: :info | :error | :warning
+  @type flash_message :: String.t()
+
+  # Form and validation types
+  @type form :: Phoenix.HTML.Form.t()
+  @type form_errors :: %{atom() => [String.t()]}
+  @type changeset_action :: :insert | :update | :delete | :validate | :ignore
+
+  # Svelte/LiveSvelte specific types
+  @type svelte_props :: map()
+  @type svelte_component_name :: String.t()
+
+  # LiveView event types
+  @type event_name :: String.t()
+  @type event_params :: map()
+  @type event_metadata :: map()
 
   # Common data structures
   @type json_map :: %{String.t() => any()}

@@ -60,18 +60,31 @@ Added comprehensive type specifications for all functions:
 - **Account Confirmation**: `confirm_user/1`, `deliver_user_confirmation_instructions/2`
 - **Password Reset**: `get_user_by_reset_password_token/1`, `reset_user_password/2`
 
-## 4. Controller Type Specifications
+## 4. Web Layer Type Specifications
 
-### UserSessionController (`lib/greenprint_web/controllers/user_session_controller.ex`)
-- Added type specifications for all action functions
-- Type-safe session creation and deletion
-- Proper parameter handling with typed maps
+### Controllers
+- **UserSessionController** (`lib/greenprint_web/controllers/user_session_controller.ex`): Session management with typed parameters
+- **ErrorHTML** (`lib/greenprint_web/controllers/error_html.ex`): Type-safe error template rendering  
+- **ErrorJSON** (`lib/greenprint_web/controllers/error_json.ex`): Structured JSON error responses
+
+### LiveView Modules
+- **Main App** (`lib/greenprint_web/app/page.ex`): Root application view with Svelte integration
+- **Authentication Views**:
+  - **Login** (`lib/greenprint_web/app/auth/login.ex`): User login with flash message handling
+  - **Register** (`lib/greenprint_web/app/auth/register.ex`): User registration with form validation
+  - **Confirm** (`lib/greenprint_web/app/auth/confirm.ex`): Email confirmation and resend functionality
+  - **Settings** (`lib/greenprint_web/app/auth/settings.ex`): User settings with email/password updates
+  - **ForgotPassword** (`lib/greenprint_web/app/auth/forgot_password.ex`): Password reset flow
+- **Dashboard** (`lib/greenprint_web/app/dashboard/page.ex`): Main dashboard view
 
 ### UserAuth Module (`lib/greenprint_web/user_auth.ex`)
 - Comprehensive authentication function typing
 - Type-safe cookie handling
 - Proper connection and session management
 - LiveView authentication helpers with proper socket typing
+
+### Components
+- **Layouts** (`lib/greenprint_web/components/layouts.ex`): Template layout components
 
 ## 5. Dialyzer Integration
 
