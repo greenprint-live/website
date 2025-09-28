@@ -28,7 +28,7 @@ defmodule GreenprintWeb.Plumbing.Router do
     end
   end
 
-  # API routes
+  # API routes (authenticated)
   scope "/api", GreenprintWeb do
     pipe_through [:api, :require_authenticated_user]
 
@@ -36,6 +36,24 @@ defmodule GreenprintWeb.Plumbing.Router do
     delete "/hubs/:hub_id", HubController, :delete
     post "/hubs/:hub_id/data_sources", DataSourceController, :create_batch
     post "/data_sources/:data_source_id/data_points", DataPointController, :create
+  end
+
+  # Agent API routes (no authentication for Lambda agent)
+  scope "/api", GreenprintWeb do
+    pipe_through [:api]
+
+    # Hub endpoints
+    get "/hubs", HubController, :index
+    get "/hubs/:hub_id", HubController, :show
+    get "/hubs/:hub_id/data_sources", HubController, :data_sources
+    get "/hubs/:hub_id/overview", HubController, :overview
+
+    # Data source endpoints
+    get "/data_sources/:data_source_id", DataSourceController, :show
+    get "/data_sources/:data_source_id/data_points", DataSourceController, :data_points
+    get "/data_sources/:data_source_id/latest", DataSourceController, :latest
+    get "/data_sources/:data_source_id/stats", DataSourceController, :stats
+    get "/data_sources/:data_source_id/trend", DataSourceController, :trend
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
