@@ -37,6 +37,39 @@ defmodule GreenprintWeb.HubController do
     end
   end
 
+  def delete(conn, %{"hub_id" => hub_id}) do
+    current_user = conn.assigns.current_user
+
+    case Data.get_gp_hub(hub_id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{success: false, error: "Hub not found"})
+
+      hub ->
+        if hub.owner_user_id != current_user.id do
+          conn
+          |> put_status(:forbidden)
+          |> json(%{success: false, error: "Access denied"})
+        else
+          case Data.delete_gp_hub(hub) do
+            {:ok, _deleted_hub} ->
+              conn
+              |> put_status(:ok)
+              |> json(%{success: true, message: "Hub deleted successfully"})
+
+            {:error, changeset} ->
+              conn
+              |> put_status(:unprocessable_entity)
+              |> json(%{
+                success: false,
+                errors: format_changeset_errors(changeset)
+              })
+          end
+        end
+    end
+  end
+
   defp format_changeset_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Enum.reduce(opts, msg, fn {key, value}, acc ->

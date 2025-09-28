@@ -154,7 +154,13 @@ defmodule Greenprint.Data do
   end
 
   @doc """
-  Deletes a GPHub.
+  Deletes a GPHub and all associated data sources, data points, and configurations.
+
+  This function performs cascade deletion in the following order:
+  1. Delete all data points for all data sources belonging to the hub
+  2. Delete all data source configurations for data sources belonging to the hub  
+  3. Delete all data sources belonging to the hub
+  4. Delete the hub itself
 
   ## Examples
 
@@ -167,7 +173,31 @@ defmodule Greenprint.Data do
   """
   @spec delete_gp_hub(GPHub.t()) :: Types.repo_result(GPHub.t())
   def delete_gp_hub(%GPHub{} = gp_hub) do
-    Repo.delete(gp_hub)
+    Repo.transaction(fn ->
+      # Get all data sources for this hub
+      data_sources = list_gp_hub_data_sources(gp_hub.id)
+      data_source_ids = Enum.map(data_sources, & &1.id)
+
+      # Delete all data points for these data sources
+      if length(data_source_ids) > 0 do
+        from(dp in GPDataPoint, where: dp.owner_gp_data_source_id in ^data_source_ids)
+        |> Repo.delete_all()
+
+        # Delete all data source configurations for these data sources
+        from(dsc in GPDataSourceConfiguration, where: dsc.data_source_id in ^data_source_ids)
+        |> Repo.delete_all()
+      end
+
+      # Delete all data sources for this hub
+      from(ds in GPDataSource, where: ds.owner_gp_hub_id == ^gp_hub.id)
+      |> Repo.delete_all()
+
+      # Finally delete the hub itself
+      case Repo.delete(gp_hub) do
+        {:ok, deleted_hub} -> deleted_hub
+        {:error, changeset} -> Repo.rollback(changeset)
+      end
+    end)
   end
 
   @doc """

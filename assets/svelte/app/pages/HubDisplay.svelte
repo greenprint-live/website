@@ -374,7 +374,7 @@
                 <p class="text-muted-foreground">{hub.description}</p>
                 <span class="text-sm text-primary underline inline-flex items-center gap-1">
                     <Mail class="w-4 h-4" />
-                    <a class="underline" href={`mailto:${hub.agentMailInbox}`}>{hub.agentMailInbox}</a>
+                    <a class="underline hover:underline" href={`mailto:${hub.agentMailInbox}`}>{hub.agentMailInbox}</a>
                 </span>
             </div>
             <div class="flex items-center gap-2">

@@ -31,4 +31,15 @@ defmodule Greenprint.AgentMail do
       {:error, reason} -> {:error, "Request failed: #{inspect(reason)}"}
     end
   end
+
+  @spec send_email(Client.t(), String.t(), String.t(), String.t(), String.t()) :: {:ok, map()} | {:error, String.t()}
+  def send_email(%Client{} = client, inbox_id, targets, subject, body) do
+    client.http_client
+    |> Tesla.post("/inboxes/#{inbox_id}/messages/send", %{to: targets, subject: subject, text: body})
+    |> case do
+      {:ok, %Tesla.Env{status: 200, body: body}} -> {:ok, body}
+      {:ok, %Tesla.Env{status: status, body: body}} -> {:error, "Request failed with status #{status}: #{inspect(body)}"}
+      {:error, reason} -> {:error, "Request failed: #{inspect(reason)}"}
+    end
+  end
 end

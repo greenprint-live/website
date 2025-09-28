@@ -124,6 +124,29 @@
             alert("Failed to create hub. Please try again.");
         }
     }
+
+    async function handleDeleteHub(hubId: string) {
+        try {
+            const response = await fetch(`/api/hubs/${hubId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || ""
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to delete hub");
+            }
+
+            // Reload the page to refresh the hub list
+            window.location.reload();
+
+        } catch (error) {
+            console.error("Error deleting hub:", error);
+            alert("Failed to delete hub. Please try again.");
+        }
+    }
 </script>
 
 <Navbar current_user={current_user} />
@@ -141,7 +164,7 @@
         <!-- Hub Grid -->
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {#each hubs as hub}
-                <HubCard {hub} />
+                <HubCard {hub} onDelete={handleDeleteHub} />
             {/each}
 
             <!-- Add Hub Card -->

@@ -62,7 +62,7 @@
         <p class="text-sm text-muted-foreground">{dataSource.description}</p>
         <span class="text-sm text-primary underline inline-flex items-center gap-1">
             <Mail class="w-4 h-4" />
-            <a class="underline" href={`mailto:${dataSource.agentMailInbox}`}>{dataSource.agentMailInbox}</a>
+            <a class="underline hover:underline" href={`mailto:${dataSource.agentMailInbox}`}>{dataSource.agentMailInbox}</a>
         </span>
     </CardHeader>
     <CardContent>

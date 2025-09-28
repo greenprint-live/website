@@ -33,6 +33,7 @@ defmodule GreenprintWeb.Plumbing.Router do
     pipe_through [:api, :require_authenticated_user]
 
     post "/hubs", HubController, :create
+    delete "/hubs/:hub_id", HubController, :delete
     post "/hubs/:hub_id/data_sources", DataSourceController, :create_batch
     post "/data_sources/:data_source_id/data_points", DataPointController, :create
   end

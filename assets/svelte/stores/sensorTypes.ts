@@ -58,7 +58,7 @@ export const SUPPORTED_SENSOR_TYPES: Record<string, SensorType> = {
         icon: Lightbulb,
         unit: "lux",
         colorClass: "bg-yellow-100 text-yellow-800",
-        defaultSelected: false,
+        defaultSelected: true,
         category: 'environmental'
     },
     motion: {
@@ -68,7 +68,7 @@ export const SUPPORTED_SENSOR_TYPES: Record<string, SensorType> = {
         icon: Eye,
         unit: "events/hr",
         colorClass: "bg-orange-100 text-orange-800",
-        defaultSelected: false,
+        defaultSelected: true,
         category: 'security'
     },
     sound: {
