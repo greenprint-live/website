@@ -158,7 +158,7 @@ defmodule Greenprint.Data do
 
   This function performs cascade deletion in the following order:
   1. Delete all data points for all data sources belonging to the hub
-  2. Delete all data source configurations for data sources belonging to the hub  
+  2. Delete all data source configurations for data sources belonging to the hub
   3. Delete all data sources belonging to the hub
   4. Delete the hub itself
 
