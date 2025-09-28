@@ -20,6 +20,10 @@ if System.get_env("PHX_SERVER") do
   config :greenprint, GreenprintWeb.Plumbing.Endpoint, server: true
 end
 
+
+config :greenprint, AgentMail,
+  api_key: System.get_env("AGENTMAIL_API_KEY")
+
 if config_env() == :prod do
   database_path =
     System.get_env("DATABASE_PATH") ||

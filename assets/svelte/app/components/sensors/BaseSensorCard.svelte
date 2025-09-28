@@ -59,7 +59,7 @@
             </Badge>
         </div>
         <p class="text-sm text-muted-foreground">{dataSource.description}</p>
-        <p class="text-sm text-muted-foreground">{dataSource.id}</p>
+        <a class="text-sm text-muted-foreground underline" href={`mailto:${dataSource.agentMailInbox}`}>{dataSource.agentMailInbox}</a>
     </CardHeader>
     <CardContent>
         <div class="flex items-center gap-4 mb-4">

@@ -60,7 +60,10 @@ defmodule Greenprint.MixProject do
 
       {:gettext, "~> 0.26"},
 
+      {:tesla, "~> 1.4"},
       {:jason, "~> 1.2"},
+
+      {:typed_struct, "~> 0.1.4"},
 
       {:dns_cluster, "~> 0.1.1"},
 

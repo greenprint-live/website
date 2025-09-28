@@ -21,6 +21,7 @@ defmodule GreenprintWeb.HubController do
             displayName: hub.display_name,
             description: hub.description,
             location: hub.location,
+            agentMailInbox: hub.agent_mail_inbox,
             insertedAt: hub.inserted_at,
             updatedAt: hub.updated_at
           }

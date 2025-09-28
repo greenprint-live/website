@@ -7,6 +7,7 @@ export interface GPHub {
     location: string;
     insertedAt: string;
     updatedAt: string;
+    agentMailInbox: string;
 }
 
 export interface GPDataSource {
@@ -22,6 +23,7 @@ export interface GPDataSource {
     lastUpdated?: string | null;
     trend?: "up" | "down" | "stable";
     status?: "active" | "inactive" | "error";
+    agentMailInbox: string;
 }
 
 export interface DetectedDataSource {

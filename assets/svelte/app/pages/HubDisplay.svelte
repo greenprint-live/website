@@ -371,6 +371,7 @@
             <div>
                 <h1 class="text-3xl font-bold mb-2">{hub.displayName}</h1>
                 <p class="text-muted-foreground">{hub.description}</p>
+                <a class="text-sm text-muted-foreground underline" href={`mailto:${hub.agentMailInbox}`}>{hub.agentMailInbox}</a>
             </div>
             <div class="flex items-center gap-2">
                 {#if connectionStatus === "connected"}

@@ -69,6 +69,7 @@ defmodule GreenprintWeb.DataSourceController do
       displayName: data_source.display_name,
       description: data_source.description,
       type: data_source.type,
+      agentMailInbox: data_source.agent_mail_inbox,
       insertedAt: data_source.inserted_at,
       updatedAt: data_source.updated_at
     }

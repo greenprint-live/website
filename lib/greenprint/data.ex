@@ -11,7 +11,6 @@ defmodule Greenprint.Data do
   alias Greenprint.Types
 
   alias Greenprint.Data.{GPHub, GPDataSource, GPDataPoint, GPDataSourceConfiguration}
-  alias Greenprint.Users.User
 
   ## GPHub operations
 
@@ -113,9 +112,26 @@ defmodule Greenprint.Data do
   """
   @spec create_gp_hub(Types.attrs()) :: Types.repo_result(GPHub.t())
   def create_gp_hub(attrs \\ %{}) do
-    %GPHub{}
-    |> GPHub.changeset(attrs)
-    |> Repo.insert()
+    client = Greenprint.AgentMail.Client.new((Application.fetch_env!(:greenprint, AgentMail))[:api_key])
+
+    hub = %GPHub{}
+      |> GPHub.changeset(attrs)
+      |> Repo.insert()
+
+    case hub do
+      {:ok, hub} -> case Greenprint.AgentMail.create_inbox(client, hub.id) do
+        {:ok, inbox} -> case update_gp_hub(hub, %{agent_mail_inbox: inbox.inbox_id}) do
+          {:ok, hub} -> {:ok, hub}
+          {:error, error} ->
+            Repo.delete(hub)
+            {:error, error}
+        end
+        {:error, error} ->
+            Repo.delete(hub)
+            {:error, error}
+      end
+      {:error, changeset} -> {:error, changeset}
+    end
   end
 
   @doc """
@@ -258,9 +274,26 @@ defmodule Greenprint.Data do
   """
   @spec create_gp_data_source(Types.attrs()) :: Types.repo_result(GPDataSource.t())
   def create_gp_data_source(attrs \\ %{}) do
-    %GPDataSource{}
-    |> GPDataSource.changeset(attrs)
-    |> Repo.insert()
+    client = Greenprint.AgentMail.Client.new((Application.fetch_env!(:greenprint, AgentMail))[:api_key])
+
+    gp_data_source = %GPDataSource{}
+      |> GPDataSource.changeset(attrs)
+      |> Repo.insert()
+
+    case gp_data_source do
+      {:ok, gp_data_source} -> case Greenprint.AgentMail.create_inbox(client, gp_data_source.id) do
+        {:ok, inbox} -> case update_gp_data_source(gp_data_source, %{agent_mail_inbox: inbox.inbox_id}) do
+          {:ok, gp_data_source} -> {:ok, gp_data_source}
+          {:error, error} ->
+            Repo.delete(gp_data_source)
+            {:error, error}
+        end
+        {:error, error} ->
+          Repo.delete(gp_data_source)
+          {:error, error}
+      end
+      {:error, changeset} -> {:error, changeset}
+    end
   end
 
   @doc """

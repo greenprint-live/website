@@ -8,6 +8,13 @@
     import DataSourceSelection from "../components/dashboard/DataSourceSelection.svelte";
     import { Card, CardHeader, CardTitle, CardContent } from "$lib/components/ui/card";
     import { Button } from "$lib/components/ui/button";
+    import { 
+        Dialog, 
+        DialogContent, 
+        DialogHeader, 
+        DialogTitle,
+        DialogDescription 
+    } from "$lib/components/ui/dialog";
 
     interface Props {
         socket: typeof LiveSocket;
@@ -17,8 +24,9 @@
 
     let { socket, current_user, hubs }: Props = $props();
 
-    type CreateHubStep = "dashboard" | "hub_form" | "data_source_selection";
-    let currentStep: CreateHubStep = $state("dashboard");
+    type CreateHubStep = "hub_form" | "data_source_selection";
+    let dialogOpen = $state(false);
+    let currentStep: CreateHubStep = $state("hub_form");
     let hubFormData = $state<{
         serialNumber: string;
         displayName: string;
@@ -29,10 +37,12 @@
     function startCreateHub() {
         currentStep = "hub_form";
         hubFormData = null;
+        dialogOpen = true;
     }
 
-    function cancelCreateHub() {
-        currentStep = "dashboard";
+    function closeDialog() {
+        dialogOpen = false;
+        currentStep = "hub_form";
         hubFormData = null;
     }
 
@@ -105,7 +115,8 @@
                 throw new Error("Failed to create data sources");
             }
 
-            // Navigate to the hub display page
+            // Close dialog and navigate to the hub display page
+            closeDialog();
             window.location.href = `/dashboard/hub/${hubId}`;
 
         } catch (error) {
@@ -117,34 +128,46 @@
 
 <Navbar current_user={current_user} />
 
-{#if currentStep === "dashboard"}
-    <div class="grid grid-cols-1 gap-4 grid-flow-row md:grid-cols-2 lg:grid-cols-3">
-        {#each hubs as hub}
-            <HubCard hub={hub} />
-        {/each}
+<div class="grid grid-cols-1 gap-4 grid-flow-row md:grid-cols-2 lg:grid-cols-3">
+    {#each hubs as hub}
+        <HubCard hub={hub} />
+    {/each}
 
-        <Card>
-            <CardHeader>
-                <CardTitle>Add Hub</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <Button onclick={startCreateHub}>Add Hub</Button>
-            </CardContent>
-        </Card>
-    </div>
-{:else if currentStep === "hub_form"}
-    <div class="container mx-auto px-4 py-8">
-        <CreateHubForm 
-            onSubmit={handleHubFormSubmit}
-            onCancel={cancelCreateHub}
-        />
-    </div>
-{:else if currentStep === "data_source_selection"}
-    <div class="container mx-auto px-4 py-8">
-        <DataSourceSelection 
-            hubData={hubFormData!}
-            onSubmit={handleDataSourceSelection}
-            onBack={goBackToHubForm}
-        />
-    </div>
-{/if}
+    <Card>
+        <CardHeader>
+            <CardTitle>Add Hub</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <Button onclick={startCreateHub}>Add Hub</Button>
+        </CardContent>
+    </Card>
+</div>
+
+<Dialog bind:open={dialogOpen}>
+    <DialogContent class="max-w-2xl max-h-[90vh] overflow-y-auto">
+        {#if currentStep === "hub_form"}
+            <DialogHeader>
+                <DialogTitle>Register New Hub</DialogTitle>
+                <DialogDescription>
+                    Enter the details for your new hub to get started with monitoring.
+                </DialogDescription>
+            </DialogHeader>
+            <CreateHubForm 
+                onSubmit={handleHubFormSubmit}
+                onCancel={closeDialog}
+            />
+        {:else if currentStep === "data_source_selection"}
+            <DialogHeader>
+                <DialogTitle>Select Data Sources</DialogTitle>
+                <DialogDescription>
+                    Choose which data sources you'd like to monitor for "{hubFormData?.displayName}".
+                </DialogDescription>
+            </DialogHeader>
+            <DataSourceSelection 
+                hubData={hubFormData!}
+                onSubmit={handleDataSourceSelection}
+                onBack={goBackToHubForm}
+            />
+        {/if}
+    </DialogContent>
+</Dialog>

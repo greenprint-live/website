@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { DetectedDataSource } from "$lib/model/Data";
     import { getAllSensorTypes, type SensorType } from "$lib/stores/sensorTypes";
-    import { Card, CardHeader, CardTitle, CardContent } from "$lib/components/ui/card";
     import { Button } from "$lib/components/ui/button";
     import { Checkbox } from "$lib/components/ui/checkbox";
     import { Label } from "$lib/components/ui/label";
@@ -57,14 +56,10 @@
     let selectedCount = $derived(detectedDataSources.filter(ds => ds.selected).length);
 </script>
 
-<Card class="max-w-2xl mx-auto">
-    <CardHeader>
-        <CardTitle>Detected Data Sources for "{hubData.displayName}"</CardTitle>
+<div class="space-y-4">
         <p class="text-sm text-muted-foreground">
             We've detected the following data sources on your hub. Select which ones you'd like to monitor.
         </p>
-    </CardHeader>
-    <CardContent class="space-y-4">
         <div class="flex gap-2 mb-4">
             <Button variant="outline" size="sm" onclick={selectAll}>
                 Select All
@@ -130,5 +125,4 @@
                 Back
             </Button>
         </div>
-    </CardContent>
-</Card>
+</div>

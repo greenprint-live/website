@@ -6,7 +6,7 @@
 	<div class="max-w-7xl mx-auto">
 		<div class="text-center">
 			<h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-				The <span class="from-primary to-primary/50 bg-gradient-to-r text-transparent bg-clip-text">Real-Time Superhero</span> for Your Safety and Sustainability
+				Safety and Sustainability are Today's Problems, not Tomorrow's.
 			</h1>
 			
 			<p class="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">

@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { Card, CardHeader, CardTitle, CardContent } from "$lib/components/ui/card";
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
     import { Label } from "$lib/components/ui/label";
@@ -45,11 +44,7 @@
     });
 </script>
 
-<Card class="max-w-md mx-auto">
-    <CardHeader>
-        <CardTitle>Register New Hub</CardTitle>
-    </CardHeader>
-    <CardContent class="space-y-4">
+<div class="space-y-4">
         <div class="space-y-2">
             <Label for="serialNumber">Serial Number</Label>
             <Input
@@ -103,5 +98,4 @@
                 Cancel
             </Button>
         </div>
-    </CardContent>
-</Card>
+</div>
