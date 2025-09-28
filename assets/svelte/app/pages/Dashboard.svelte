@@ -128,19 +128,63 @@
 
 <Navbar current_user={current_user} />
 
-<div class="grid grid-cols-1 gap-4 grid-flow-row md:grid-cols-2 lg:grid-cols-3">
-    {#each hubs as hub}
-        <HubCard hub={hub} />
-    {/each}
+<div class="min-h-screen bg-gradient-to-br from-background to-muted/20">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-foreground mb-2">Your Hubs</h1>
+            <p class="text-muted-foreground">
+                Monitor and manage your connected GreenPrint hubs
+            </p>
+        </div>
 
-    <Card>
-        <CardHeader>
-            <CardTitle>Add Hub</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <Button onclick={startCreateHub}>Add Hub</Button>
-        </CardContent>
-    </Card>
+        <!-- Hub Grid -->
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {#each hubs as hub}
+                <HubCard {hub} />
+            {/each}
+
+            <!-- Add Hub Card -->
+            <Card class="border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/25 transition-all duration-200 cursor-pointer group" onclick={startCreateHub}>
+                <CardContent class="flex flex-col items-center justify-center p-8 text-center min-h-[200px]">
+                    <div class="p-4">
+                        <div class="bg-primary/10 rounded-full mb-4 group-hover:bg-primary/20 transition-colors">
+                            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-foreground mb-2">Add New Hub</h3>
+                        <p class="text-sm text-muted-foreground">
+                            Connect a new environmental monitoring hub to your network
+                        </p>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+
+        <!-- Empty State -->
+        {#if hubs.length === 0}
+            <div class="text-center py-16">
+                <div class="max-w-md mx-auto">
+                    <div class="p-6 bg-muted/20 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                        <svg class="w-12 h-12 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-foreground mb-4">No Hubs Connected</h2>
+                    <p class="text-muted-foreground mb-8">
+                        Get started by connecting your first environmental monitoring hub to begin tracking your data.
+                    </p>
+                    <Button onclick={startCreateHub} size="lg" class="px-8">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Add Your First Hub
+                    </Button>
+                </div>
+            </div>
+        {/if}
+    </div>
 </div>
 
 <Dialog bind:open={dialogOpen}>

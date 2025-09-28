@@ -10,6 +10,7 @@
     import { Badge } from "$lib/components/ui/badge";
     import { ArrowLeft, Activity, Wifi, WifiOff, Play, Square, Settings, Zap } from "@lucide/svelte";
     import { onMount, onDestroy } from "svelte";
+    import { Mail } from "lucide-svelte";
 
     interface Props {
         socket: typeof LiveSocket;
@@ -371,7 +372,10 @@
             <div>
                 <h1 class="text-3xl font-bold mb-2">{hub.displayName}</h1>
                 <p class="text-muted-foreground">{hub.description}</p>
-                <a class="text-sm text-muted-foreground underline" href={`mailto:${hub.agentMailInbox}`}>{hub.agentMailInbox}</a>
+                <span class="text-sm text-primary underline inline-flex items-center gap-1">
+                    <Mail class="w-4 h-4" />
+                    <a class="underline" href={`mailto:${hub.agentMailInbox}`}>{hub.agentMailInbox}</a>
+                </span>
             </div>
             <div class="flex items-center gap-2">
                 {#if connectionStatus === "connected"}

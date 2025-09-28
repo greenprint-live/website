@@ -3,6 +3,7 @@
     import type { SensorType } from "$lib/stores/sensorTypes";
     import { Card, CardHeader, CardTitle, CardContent } from "$lib/components/ui/card";
     import { Badge } from "$lib/components/ui/badge";
+    import { Mail } from "@lucide/svelte";
 
     interface Props {
         dataSource: GPDataSource;
@@ -59,7 +60,10 @@
             </Badge>
         </div>
         <p class="text-sm text-muted-foreground">{dataSource.description}</p>
-        <a class="text-sm text-muted-foreground underline" href={`mailto:${dataSource.agentMailInbox}`}>{dataSource.agentMailInbox}</a>
+        <span class="text-sm text-primary underline inline-flex items-center gap-1">
+            <Mail class="w-4 h-4" />
+            <a class="underline" href={`mailto:${dataSource.agentMailInbox}`}>{dataSource.agentMailInbox}</a>
+        </span>
     </CardHeader>
     <CardContent>
         <div class="flex items-center gap-4 mb-4">
