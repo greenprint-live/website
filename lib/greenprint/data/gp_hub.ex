@@ -17,11 +17,12 @@ defmodule Greenprint.Data.GPHub do
     display_name: Types.display_name(),
     description: Types.description(),
     location: Types.location(),
+    agent_mail_inbox: Types.email() | nil,
     inserted_at: Types.timestamp(),
     updated_at: Types.timestamp()
   }
 
-  @derive {Jason.Encoder, only: [:id, :owner_user_id, :serial_number, :display_name, :description, :location, :inserted_at, :updated_at]}
+  @derive {Jason.Encoder, only: [:id, :owner_user_id, :serial_number, :display_name, :description, :location, :agent_mail_inbox, :inserted_at, :updated_at]}
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "gp_hubs" do
@@ -30,6 +31,7 @@ defmodule Greenprint.Data.GPHub do
     field :location, :string
     field :serial_number, :string
     field :display_name, :string
+    field :agent_mail_inbox, :string
 
     timestamps(type: :utc_datetime)
   end
@@ -38,7 +40,8 @@ defmodule Greenprint.Data.GPHub do
   @spec changeset(t(), Types.attrs()) :: Types.changeset(t())
   def changeset(gp_hub, attrs) do
     gp_hub
-    |> cast(attrs, [:owner_user_id, :serial_number, :display_name, :description, :location])
+    |> cast(attrs, [:owner_user_id, :serial_number, :display_name, :description, :location, :agent_mail_inbox])
     |> validate_required([:owner_user_id, :serial_number, :display_name, :description, :location])
+    |> validate_format(:agent_mail_inbox, ~r/^[^\s]+@[^\s]+$/, message: "must be a valid email")
   end
 end
